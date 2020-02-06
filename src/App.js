@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import './CssReset.css'
-import SearchTodo from './components/SearchTodo'
-import TodoList from './components/TodoList'
-import AddTodo from './components/AddTodo'
-import BottomBar from './components/BottomBar'
+import SearchTodo from './components/searchTodo/SearchTodo'
+import TodoList from './components/todoList/TodoList'
+import AddTodo from './components/addTodo/AddTodo'
+import BottomBar from './components/bottomBar/BottomBar'
 
 
 const App = () => {
@@ -12,28 +12,14 @@ const App = () => {
 
   const [searchKey, setSearchKey] = useState('')
 
-  const [showFilteredTodos, setShowFiltered] = useState('all')
-
-  console.log(showFilteredTodos)
-
-  //let filteredTodos = todos.filter(todo => todo.content.toLowerCase().includes(searchKey.toLowerCase()));
-  let filteredTodos = todos.filter(todo => {
-    if (todo.content.toLowerCase().includes(searchKey.toLowerCase())) {
-      if (showFilteredTodos === 'completed' && todo.status === true) {
-        return todo
-      }
-      else if (showFilteredTodos === 'active' && todo.status === false) {
-        return todo
-      }
-      else if (showFilteredTodos === 'all') {
-        return todo
-      }
-
-    }
+  let [showFilteredTodos, setShowFiltered] = useState('all')
 
 
-  })
 
+  let filteredTodos = todos.filter(todo => todo.content.toLowerCase().includes(searchKey.toLowerCase()) &&
+    ((showFilteredTodos === 'completed' && todo.status === true) ||
+      (showFilteredTodos === 'active' && todo.status === false) ||
+      (showFilteredTodos === 'all')))
 
 
   const addTodo = (textTodo) => {
@@ -48,15 +34,16 @@ const App = () => {
     setTodos([...newTodos]);
   }
 
-  const changeStatus = (id) => {
+  const changeStatus = (id, target, status) => {
     const newTodos = todos.map(todo => {
       if (todo.id === id) {
         todo.status = !todo.status
       }
       return todo
     })
-    console.log(newTodos)
+    target.checked = !status;
     setTodos([...newTodos]);
+
   }
 
   const getSearchKey = (gotSearchKey) => {
@@ -65,19 +52,17 @@ const App = () => {
   }
 
   const showAll = () => {
-    console.log('all')
     filteredTodos = todos;
     setShowFiltered('all')
   }
 
   const showActive = () => {
-    console.log('active')
     filteredTodos = todos.filter(todo => todo.status === true)
     setShowFiltered('active')
   }
 
   const showCompleted = () => {
-    console.log('completed')
+
     filteredTodos = todos.filter(todo => todo.status === false)
     setShowFiltered('completed')
   }

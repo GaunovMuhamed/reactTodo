@@ -180,3 +180,5 @@
   display: flex;
   width: 100%;
 }
+
+.new-todo-done:checked {}
