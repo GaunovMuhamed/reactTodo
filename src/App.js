@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import './CssReset.css'
 import SearchTodo from './components/SearchTodo'
 import TodoList from './components/TodoList'
@@ -6,72 +6,96 @@ import AddTodo from './components/AddTodo'
 import BottomBar from './components/BottomBar'
 
 
-class App extends Component {
+const App = () => {
 
-  state = {
-    todos: [
-      { id: 1, content: 'Buy some milk', done: false },
-      { id: 2, content: 'Play mario cart', done: true }
-    ]
-  }
+  const [todos, setTodos] = useState([{ id: 1, content: 'buy milk', status: false }, { id: 2, content: 'go shopping', status: true }]);
 
-  addTodo = (textTodo) => {
+  const [searchKey, setSearchKey] = useState('')
+
+  const [showFilteredTodos, setShowFiltered] = useState('all')
+
+  console.log(showFilteredTodos)
+
+  //let filteredTodos = todos.filter(todo => todo.content.toLowerCase().includes(searchKey.toLowerCase()));
+  let filteredTodos = todos.filter(todo => {
+    if (todo.content.toLowerCase().includes(searchKey.toLowerCase())) {
+      if (showFilteredTodos === 'completed' && todo.status === true) {
+        return todo
+      }
+      else if (showFilteredTodos === 'active' && todo.status === false) {
+        return todo
+      }
+      else if (showFilteredTodos === 'all') {
+        return todo
+      }
+
+    }
+
+
+  })
+
+
+
+  const addTodo = (textTodo) => {
     if (textTodo.trim()) {
-      const newTodo = { content: textTodo, id: Math.random(), done: false }
-      const todos = [...this.state.todos, newTodo]
-      this.setState({
-        todos
-      })
+      const newTodo = { id: Math.random(), content: textTodo, status: false }
+      setTodos([...todos, newTodo])
     }
   }
 
-  deleteTodo = (id) => {
-    const todos = this.state.todos.filter(todo => {
-      return todo.id !== id;
+  const deleteTodo = (id) => {
+    const newTodos = todos.filter(todo => todo.id !== id);
+    setTodos([...newTodos]);
+  }
+
+  const changeStatus = (id) => {
+    const newTodos = todos.map(todo => {
+      if (todo.id === id) {
+        todo.status = !todo.status
+      }
+      return todo
     })
-
-    this.setState({ todos: todos });
+    console.log(newTodos)
+    setTodos([...newTodos]);
   }
 
-  changeState = (id) => {
+  const getSearchKey = (gotSearchKey) => {
 
-    const todos = this.state.todos.map((todo) => todo.id == id ? todo.done = !todo.done : todo.done)
+    setSearchKey(gotSearchKey)
+  }
 
-    this.setState(todos)
+  const showAll = () => {
+    console.log('all')
+    filteredTodos = todos;
+    setShowFiltered('all')
+  }
+
+  const showActive = () => {
+    console.log('active')
+    filteredTodos = todos.filter(todo => todo.status === true)
+    setShowFiltered('active')
+  }
+
+  const showCompleted = () => {
+    console.log('completed')
+    filteredTodos = todos.filter(todo => todo.status === false)
+    setShowFiltered('completed')
   }
 
 
-  filteringTodos = (className) => {
-    let todos = this.state.todos;
-    if (className == "all-button") {
-      todos.forEach(todo => todo.className = "new-todo")
-    }
-    else if (className == "active-button") {
-      todos.forEach(todo => todo.done ? todo.className = "hide-todo" : todo.className = "new-todo")
-    }
-    else if (className == "completed-button") {
-      todos.forEach(todo => todo.done ? todo.className = "new-todo" : todo.className = "hide-todo")
-    }
-    console.log(todos)
-    this.setState([...todos])
-  }
-
-
-  render() {
-    return (
-      <div className="App">
-        <main className="main-container">
-          <h1 className="main-text">todos</h1>
-          <div className="input-area">
-            <SearchTodo />
-            <TodoList todos={this.state.todos} deleteTodo={this.deleteTodo} changeState={this.changeState} />
-            <AddTodo addTodo={this.addTodo} />
-            <BottomBar filteringTodos={this.filteringTodos} />
-          </div>
-        </main>
-      </div>
-    )
-  }
+  return (
+    <div className="App">
+      <main className="main-container">
+        <h1 className="main-text">todos</h1>
+        <div className="input-area">
+          <SearchTodo getSearchKey={getSearchKey} />
+          <TodoList todos={filteredTodos} deleteTodo={deleteTodo} changeStatus={changeStatus} />
+          <AddTodo addTodo={addTodo} />
+          <BottomBar showAll={showAll} showActive={showActive} showCompleted={showCompleted} />
+        </div>
+      </main>
+    </div>
+  )
 
 }
 

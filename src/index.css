@@ -76,6 +76,11 @@
   transition: 1s;
 }
 
+.new-todo-done:hover .delete-button {
+  opacity: 1;
+  transition: 1s;
+}
+
 .hide-todo {
   display: none;
 }
@@ -169,4 +174,9 @@
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
+}
+
+.todo-container {
+  display: flex;
+  width: 100%;
 }
